@@ -14,9 +14,8 @@ lib/expat/xmlwf/xmlwf
 *.tgz
 venv/
 node_modules/
-build/lib/*
-dist/js
-dist/libraries
-dist/license
+build/lib/
+dist/
 test
 .pnpm-store
+build/em_cache

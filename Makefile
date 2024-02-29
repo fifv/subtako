@@ -8,6 +8,7 @@ export CFLAGS = -O3 -flto -s USE_PTHREADS=0 -fno-rtti -fno-exceptions
 export CXXFLAGS = $(CFLAGS)
 export PKG_CONFIG_PATH = $(DIST_DIR)/lib/pkgconfig
 export EM_PKG_CONFIG_PATH = $(PKG_CONFIG_PATH)
+export EM_CACHE = $(BASE_DIR)build/em_cache
 
 SIMD_ARGS = \
 	-msimd128 \
@@ -19,9 +20,9 @@ SIMD_ARGS = \
 	-msse4.1 \
 	-msse4.2 \
 	-mavx \
-	-mavx2 \
 	-matomics \
 	-mnontrapping-fptoint 
+# -mavx2 \
 
 ifeq (${MODERN},1)
 	WORKER_NAME = jassub-worker-modern
@@ -39,10 +40,9 @@ else
 
 endif
 
-all: jassub
-jassub: dist
+dist: $(LIBASS_DEPS) dist/js/jassub-worker.js dist/js/jassub.js
 
-.PHONY: all jassub dist
+.PHONY:  dist
 
 include functions.mk
 
@@ -173,7 +173,6 @@ LIBASS_DEPS = \
 	$(DIST_DIR)/lib/libass.a
 
 
-dist: $(LIBASS_DEPS) dist/js/$(WORKER_NAME).js dist/js/jassub.js
 
 # Dist Files https://github.com/emscripten-core/emscripten/blob/3.1.38/src/settings.js
 
@@ -207,8 +206,8 @@ COMPAT_ARGS = \
 		-s EXPORT_KEEPALIVE=1 \
 		-s EXPORTED_RUNTIME_METHODS="['getTempRet0', 'setTempRet0']" \
 		-s IMPORTED_MEMORY=1 \
-		-s MIN_CHROME_VERSION=27 \
-		-s MIN_SAFARI_VERSION=60005 \
+		-s MIN_CHROME_VERSION=70 \
+		-s MIN_SAFARI_VERSION=90000 \
 		-mbulk-memory \
 		--memory-init-file 0 
 
@@ -228,9 +227,27 @@ dist/js/$(WORKER_NAME).js: src/JASSUB.cpp src/worker.js src/pre-worker.js
 		-lembind \
 		-o $@
 
+dist/js/jassub-worker.js: src/worker.js dist/js/$(WORKER_NAME).js
+	mkdir -p dist/js
+	bun build src/worker.js --outfile dist/js/jassub-worker.js --minify
+
 dist/js/jassub.js: src/jassub.js
 	mkdir -p dist/js
 	cp src/jassub.js $@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # dist/license/all:
 #	@#FIXME: allow -j in toplevel Makefile and reintegrate licence extraction into this file

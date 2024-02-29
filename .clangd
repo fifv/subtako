@@ -1,0 +1,21 @@
+CompileFlags:
+  Add:
+    - -target
+    - wasm32-unknown-emscripten
+    - --sysroot=/home/fifv/.emscripten_cache/sysroot
+    ### seems the 3 above is required?
+    # - -fignore-exceptions
+    # - -fvisibility=default
+    # - -mllvm
+    # - -combiner-global-alias-analysis=false
+    # - -mllvm
+    # - -enable-emscripten-sjlj
+    # - -mllvm
+    # - -disable-lsr
+    # - -DEMSCRIPTEN
+    # - -Xclang
+    # - -iwithsysroot/include/fakesdl
+    # - -Xclang
+    # - -iwithsysroot/include/compat
+    # - -g3
+
